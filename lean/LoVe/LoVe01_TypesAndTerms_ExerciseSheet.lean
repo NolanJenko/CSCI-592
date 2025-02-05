@@ -32,7 +32,7 @@ def K : α → β → α :=
   fun a b ↦ a
 
 def C : (α → β → γ) → β → α → γ :=
-  fun f b a ↦  f a b
+  fun f b a ↦ f a b
 
 def projFst : α → α → α :=
   fun a a ↦ a

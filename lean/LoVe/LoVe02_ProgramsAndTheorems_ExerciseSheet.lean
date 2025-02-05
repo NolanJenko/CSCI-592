@@ -62,6 +62,7 @@ def someEnv : String → ℤ
   | _   => 201
 
 #eval eval someEnv (AExp.var "x")   -- expected: 3
+#eval eval someEnv (AExp.var "y")
 -- invoke `#eval` here
 
 /- 2.2. The following function simplifies arithmetic expressions involving
@@ -91,8 +92,8 @@ the property that the value of `e` after simplification is the same as the
 value of `e` before. -/
 
 theorem simplify_correct (env : String → ℤ) (e : AExp) :
-  True :=   -- replace `True` by your theorem statement
-  sorry   -- leave `sorry` alone
+  simplify e = e :=
+    sorry
 
 
 /- ## Question 3 (**optional**): Map
@@ -100,8 +101,9 @@ theorem simplify_correct (env : String → ℤ) (e : AExp) :
 3.1 (**optional**). Define a generic `map` function that applies a function to
 every element in a list. -/
 
-def map {α : Type} {β : Type} (f : α → β) : List α → List β :=
-  sorry
+def map {α : Type} {β : Type} (f : α → β) : List α → List β
+  | [] => []
+  | x :: xs => (f x) :: map f xs
 
 #eval map (fun n ↦ n + 10) [1, 2, 3]   -- expected: [11, 12, 13]
 
@@ -115,5 +117,12 @@ Try to give meaningful names to your theorems. Also, make sure to state the
 second property as generally as possible, for arbitrary types. -/
 
 -- enter your theorem statements here
+theorem mapIdentity {α : Type} (list : List α) (f : α → α) :
+  map f list = list :=
+    sorry
+
+theorem mapComposition {α : Type} {β : Type} {γ : Type } {f : α → β} {g : β → γ} (list : List α):
+  map (g ∘ f) list = map g (map f list):=
+    sorry
 
 end LoVe

@@ -26,35 +26,61 @@ Section 3.3 in the Hitchhiker's Guide. -/
 
 theorem I (a : Prop) :
   a → a :=
-  sorry
+  by
+    intro ha
+    apply ha
 
 theorem K (a b : Prop) :
   a → b → b :=
-  sorry
+    by
+      intro a b
+      apply b
 
 theorem C (a b c : Prop) :
   (a → b → c) → b → a → c :=
-  sorry
+    by
+      intro f
+      intro b a
+      apply f
+      apply a
+      apply b
 
 theorem proj_fst (a : Prop) :
   a → a → a :=
-  sorry
+  by
+    intro a
+    intro ha
+    apply ha
+
 
 /- Please give a different answer than for `proj_fst`: -/
 
 theorem proj_snd (a : Prop) :
   a → a → a :=
-  sorry
+  by
+    intro a aa
+    apply aa
 
 theorem some_nonsense (a b c : Prop) :
   (a → b → c) → a → (a → c) → b → c :=
-  sorry
+  by
+    intro f a
+    intro g b
+    apply f
+    apply a
+    apply b
 
 /- 1.2. Prove the contraposition rule using basic tactics. -/
 
 theorem contrapositive (a b : Prop) :
   (a → b) → ¬ b → ¬ a :=
-  sorry
+  by
+    intro f not_b a
+    apply not_b
+    apply f
+    apply a
+
+
 
 /- 1.3. Prove the distributivity of `∀` over `∧` using basic tactics.
 
@@ -72,27 +98,73 @@ theorem forall_and {α : Type} (p q : α → Prop) :
 2.1. Prove the following recursive equations on the first argument of the
 `mul` operator defined in lecture 1. -/
 
-#check mul
+#check mul 9 1
 
 theorem mul_zero (n : ℕ) :
   mul 0 n = 0 :=
-  sorry
+  by
+    induction n with
+      | zero => rfl
+      | succ n' ih =>
+        rw [mul]
+        rw [ih]
+        rw [add]
+
 
 #check add_succ
 theorem mul_succ (m n : ℕ) :
   mul (Nat.succ m) n = add (mul m n) n :=
-  sorry
+  by
+    induction n with
+      | zero =>
+        rfl
+      | succ n' ih =>
+        rw [mul]
+        rw [add]
+        rw [add_succ]
+        rw [mul]
+        rw [ih]
+        ac_rfl
+
 
 /- 2.2. Prove commutativity and associativity of multiplication using the
 `induction` tactic. Choose the induction variable carefully. -/
 
 theorem mul_comm (m n : ℕ) :
   mul m n = mul n m :=
-  sorry
+  by
+    induction n with
+    | zero =>
+      rw [mul]
+      rw [mul_zero]
+    | succ n' ih =>
+      rw [mul]
+      rw [mul_succ]
+      rw [ih]
+      rw [add_comm]
+
 
 theorem mul_assoc (l m n : ℕ) :
   mul (mul l m) n = mul l (mul m n) :=
-  sorry
+  by
+    induction l with
+      | zero =>
+        rw  [mul_zero]
+        rw [mul_zero]
+        rw [mul_zero]
+      | succ n' ih =>
+        rw [mul_comm]
+        rw [mul_succ]
+        rw [mul_succ]
+        rw [mul_add]
+        rw [mul_comm]
+        rw [ih]
+        simp [mul_comm]
+
+
+
+
+
 
 /- 2.3. Prove the symmetric variant of `mul_add` using `rw`. To apply
 commutativity at a specific position, instantiate the rule by passing some

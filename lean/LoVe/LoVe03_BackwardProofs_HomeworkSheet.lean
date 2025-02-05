@@ -29,11 +29,20 @@ Section 3.3 in the Hitchhiker's Guide. -/
 
 theorem B (a b c : Prop) :
   (a → b) → (c → a) → c → b :=
-  sorry
+  by
+    intro f g c
+    apply f
+    apply g
+    apply c
 
 theorem S (a b c : Prop) :
   (a → b → c) → (a → b) → a → c :=
-  sorry
+  by
+    intro f g a
+    apply f
+    apply a
+    apply g
+    apply a
 
 theorem more_nonsense (a b c d : Prop) :
   ((a → b) → c → d) → c → b → d :=
@@ -65,7 +74,8 @@ Hints:
 
 theorem herman (a : Prop) :
   ¬¬ (¬¬ a → a) :=
-  sorry
+  by
+    simp [Not]
 
 /- 2.2 (2 points). Prove the missing link in our chain of classical axiom
 implications.

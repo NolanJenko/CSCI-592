@@ -38,10 +38,10 @@ constructing a term. By hovering over `_`, you will see the current logical
 context. -/
 
 def B : (α → β) → (γ → α) → γ → β :=
-  sorry
+  fun f g y ↦ f (g y)
 
 def S : (α → β → γ) → (α → β) → α → γ :=
-  sorry
+  fun f g a ↦ f a (g a)
 
 def moreNonsense : ((α → β) → γ → δ) → γ → β → δ :=
   sorry
@@ -67,6 +67,6 @@ useful.
 
 Feel free to introduce abbreviations to avoid repeating large contexts `C`. -/
 
--- write your solution here
+
 
 end LoVe
