@@ -46,11 +46,20 @@ theorem S (a b c : Prop) :
 
 theorem more_nonsense (a b c d : Prop) :
   ((a → b) → c → d) → c → b → d :=
-  sorry
+  by
+    intro f hc hb
+    have ha : Prop :=
+      a
+    apply f
+    apply hb
+    apply ha
 
 theorem even_more_nonsense (a b c : Prop) :
   (a → b) → (a → c) → a → b → c :=
-  sorry
+  by
+    intro f g a B
+    apply g
+    apply a
 
 /- 1.2 (1 point). Prove the following theorem using basic tactics. -/
 
@@ -74,8 +83,8 @@ Hints:
 
 theorem herman (a : Prop) :
   ¬¬ (¬¬ a → a) :=
-  by
-    simp [Not]
+  sorry
+
 
 /- 2.2 (2 points). Prove the missing link in our chain of classical axiom
 implications.

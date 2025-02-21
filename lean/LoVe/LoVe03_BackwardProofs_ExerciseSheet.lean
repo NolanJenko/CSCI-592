@@ -90,7 +90,27 @@ be necessary. -/
 
 theorem forall_and {α : Type} (p q : α → Prop) :
   (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
-  sorry
+  by
+    apply Iff.intro
+    {
+      intro h
+      apply And.intro
+      {
+        intro x
+        exact And.left (h x)
+      }
+      {
+        intro x
+        exact And.right (h x)
+      }
+    }
+    {
+      intro f
+      intro x
+      apply And.intro
+      exact And.left f x
+      exact And.right f x
+    }
 
 
 /- ## Question 2: Natural Numbers
@@ -172,7 +192,17 @@ arguments (e.g., `mul_comm _ l`). -/
 
 theorem add_mul (l m n : ℕ) :
   mul (add l m) n = add (mul n l) (mul n m) :=
-  sorry
+  by
+    induction n with
+      | zero =>
+        rw [mul_comm]
+        rw [mul_zero]
+        rw [mul_zero]
+        rw [add_zero]
+        rw [mul_zero]
+      | succ n' ih =>
+        rw [mul_comm]
+        rw [mul_add]
 
 
 /- ## Question 3 (**optional**): Intuitionistic Logic
@@ -202,6 +232,10 @@ and similarly for `Peirce`. -/
 theorem Peirce_of_EM :
   ExcludedMiddle → Peirce :=
   sorry
+  -- by
+  --   intro e p
+  --   rw [Peirce]
+  --   rw [ExcludedMiddle]
 
 /- 3.2 (**optional**). Prove the following implication using tactics. -/
 
