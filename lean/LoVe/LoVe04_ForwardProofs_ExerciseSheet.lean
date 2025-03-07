@@ -87,6 +87,8 @@ theorem forall_and {α : Type} (p q : α → Prop) :
         show (∀x, p x ∧ q x) by
           simp [pandx])
 
+
+-- For some reason simp works so trying to do this proof a little more explicitly
 theorem forall_and_two {α : Type} (p q : α → Prop) :
   (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
     Iff.intro
@@ -117,10 +119,7 @@ theorem forall_exists_of_exists_forall {α : Type} (p : α → α → Prop) :
       fix x : α
       assume h : ∀y, p x y
       show ∃ x, p x y from
-        by
-          apply x
-          apply y
-
+        Exists.intro x (h y)
     )
 
 

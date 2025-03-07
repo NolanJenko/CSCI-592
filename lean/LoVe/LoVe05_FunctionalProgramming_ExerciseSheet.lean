@@ -36,11 +36,13 @@ theorem reverseAccu_Eq_reverse_append {α : Type} :
     | asx, [] => by
         rfl
     | ash, x :: xsh => by
-      simp [reverse]
       simp [reverseAccu]
+      simp [reverse]
+      -- Assume inductive hytpothesis, you can rewrite the equation to match the right since the
+      -- arguments switch between sides
+      -- Tried this with a different proof (reverseAccu_eq_reverse) and it could not find termination so will have to read
+      -- the termination section again in chapter 5
       rw [reverseAccu_Eq_reverse_append]
-
-      -- simp [reverseAccu]
 
 
 
@@ -52,7 +54,6 @@ theorem reverseAccu_eq_reverse {α : Type} (xs : List α) :
       rw [reverseAccu_Eq_reverse_append]
       simp [reverse]
 
-
 /- 1.3. Prove the following property.
 
 Hint: A one-line inductionless proof is possible. -/
@@ -60,8 +61,10 @@ Hint: A one-line inductionless proof is possible. -/
 theorem reverseAccu_reverseAccu {α : Type} (xs : List α) :
   reverseAccu [] (reverseAccu [] xs) = xs :=
   by
+    -- easy two liner although not sure how to get the one liner
     simp [reverseAccu_eq_reverse]
-
+    -- theorem reverse (reverse xs) = xs is defined in chapter 4 and 2 so can be reused here
+    rw [reverse_reverse]
 
 
 /- 1.4. Prove the following theorem by structural induction, as a "paper"
@@ -105,8 +108,10 @@ def drop {α : Type} : ℕ → List α → List α
 To avoid unpleasant surprises in the proofs, we recommend that you follow the
 same recursion pattern as for `drop` above. -/
 
-def take {α : Type} : ℕ → List α → List α :=
-  sorry
+def take {α : Type} : ℕ → List α → List α
+  | 0,     _      => []
+  | _ + 1, []      => []
+  | m + 1, x :: xs  => [x] ++(take m xs)
 
 #eval take 0 [3, 7, 11]   -- expected: []
 #eval take 1 [3, 7, 11]   -- expected: [3]
@@ -121,12 +126,16 @@ Notice that they are registered as simplification rules thanks to the `@[simp]`
 attribute. -/
 
 @[simp] theorem drop_nil {α : Type} :
-  ∀n : ℕ, drop n ([] : List α) = [] :=
-  sorry
+  ∀n : ℕ, drop n ([] : List α) = []
+    | Nat.zero => by rfl
+    | Nat.succ ns => by
+      rfl
+
 
 @[simp] theorem take_nil {α : Type} :
-  ∀n : ℕ, take n ([] : List α) = [] :=
-  sorry
+  ∀n : ℕ, take n ([] : List α) = []
+    | Nat.zero => by rfl
+    | Nat.succ nh => by rfl
 
 /- 2.3. Follow the recursion pattern of `drop` and `take` to prove the
 following theorems. In other words, for each theorem, there should be three
@@ -138,15 +147,36 @@ two arguments to `drop`). For the third case, `← add_assoc` might be useful. -
 theorem drop_drop {α : Type} :
   ∀(m n : ℕ) (xs : List α), drop n (drop m xs) = drop (n + m) xs
   | 0,     n, xs      => by rfl
-  -- supply the two missing cases here
+  | m, 0, xs => by
+    simp [drop]
+  | m+1, n, xs => by
+    cases xs with
+      | nil => simp [drop]
+      | cons a xs' =>
+        simp [drop]
+        rw [drop_drop]
+
 
 theorem take_take {α : Type} :
-  ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs :=
-  sorry
+  ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs
+   | 0, xs => by rfl
+   | m+1, xs => by
+     cases xs with
+      | nil => simp [take]
+      | cons a xs' =>
+        simp [take]
+        rw [take_take]
 
 theorem take_drop {α : Type} :
-  ∀(n : ℕ) (xs : List α), take n xs ++ drop n xs = xs :=
-  sorry
+  ∀(n : ℕ) (xs : List α), take n xs ++ drop n xs = xs
+    | 0, xs => by rfl
+    | n+1, xs => by
+      cases xs with
+        | nil => rfl
+        | cons a xs' =>
+          simp [drop]
+          simp [take]
+          rw [take_drop]
 
 
 /- ## Question 3: A Type of Terms
