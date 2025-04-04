@@ -48,11 +48,10 @@ theorem more_nonsense (a b c d : Prop) :
   ((a → b) → c → d) → c → b → d :=
   by
     intro f hc hb
-    have ha : Prop :=
-      a
     apply f
-    apply hb
-    apply ha
+    intro hf
+    exact hb
+    exact hc
 
 theorem even_more_nonsense (a b c : Prop) :
   (a → b) → (a → c) → a → b → c :=
@@ -65,7 +64,14 @@ theorem even_more_nonsense (a b c : Prop) :
 
 theorem weak_peirce (a b : Prop) :
   ((((a → b) → a) → a) → b) → b :=
-  sorry
+  by
+    intro h
+    apply h
+    intro f
+    apply f
+    intro ha
+    apply h (fun _ ↦ ha)
+
 
 
 /- ## Question 2 (5 points): Logical Connectives
@@ -83,7 +89,19 @@ Hints:
 
 theorem herman (a : Prop) :
   ¬¬ (¬¬ a → a) :=
-  sorry
+  by
+    intro h
+    apply h
+    intro nna
+    apply False.elim
+    apply nna
+    intro ha
+    apply h
+    intro _
+    exact ha
+
+
+    -- simp [Not]
 
 
 /- 2.2 (2 points). Prove the missing link in our chain of classical axiom
@@ -109,7 +127,20 @@ Hints:
 
 theorem EM_of_DN :
   DoubleNegation → ExcludedMiddle :=
-  sorry
+  by
+    rw [DoubleNegation, ExcludedMiddle]
+    intro h _
+    apply h
+    intro nh
+    apply nh
+    apply Or.inr
+    intro a
+    apply nh
+    apply Or.inl
+    exact a
+
+
+
 
 /- 2.3 (2 points). We have proved three of the six possible implications
 between `ExcludedMiddle`, `Peirce`, and `DoubleNegation`. State and prove the

@@ -38,6 +38,8 @@ evaluates in the given environment: -/
 
 inductive BigStep : AExp × Envir → ℤ → Prop
   | num (i env) : BigStep (AExp.num i, env) i
+  | add (a b env) : BigStep (AExp.add (AExp.num a) (AExp.num b), env) (a+b)
+  | mul (a b env) : BigStep (AExp.add (AExp.num a) (AExp.num b), env) (a+b)
 
 infix:60 " ⟹ " => BigStep
 
@@ -47,16 +49,28 @@ above.
 Hint: It may help to first prove
 `(AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ 2 + 2`. -/
 
+
+theorem BigStep_add_add_two (env : Envir) :
+  (AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ (2 + 2) :=
+    have h := BigStep.add 2 2 env
+    h
+
 theorem BigStep_add_two_two (env : Envir) :
   (AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ 4 :=
-  sorry
+    by
+        apply BigStep_add_add_two
 
 /- 1.3 (2 points). Prove that the big-step semantics is sound with respect to
 the `eval` function: -/
 
 theorem BigStep_sound (aenv : AExp × Envir) (i : ℤ) (hstep : aenv ⟹ i) :
   eval (Prod.snd aenv) (Prod.fst aenv) = i :=
-  sorry
+  by
+    induction aenv with
+      | mk =>
+        simp [eval]
+        rw []
+        apply [fst snd i]
 
 
 /- ## Question 2 (5 points + 1 bonus point): Semantics of Regular Expressions
@@ -130,7 +144,14 @@ inductive Matches {α : Type} : Regex α → List α → Prop
 
 @[simp] theorem Matches_atom {α : Type} {s : List α} {a : α} :
   Matches (Regex.atom a) s ↔ s = [a] :=
-  sorry
+  Iff.intro
+  (
+    assume h : Matches (Regex.atom a) s
+    h
+  )
+  (
+    sorry
+  )
 
 @[simp] theorem Matches_nothing {α : Type} {s : List α} :
   ¬ Matches Regex.nothing s :=

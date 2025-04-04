@@ -93,8 +93,8 @@ theorem forall_and_two {α : Type} (p q : α → Prop) :
   (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
     Iff.intro
       (assume pax : ∀x, p x ∧ q x
-        show (∀x, p x) ∧ (∀x, q x)
-          fix x : α
+        show (∀x, p x) ∧ (∀x, q x) from
+          assume x : α
           have px : Prop :=
             p x
           have q x : Prop :=
@@ -105,6 +105,7 @@ theorem forall_and_two {α : Type} (p q : α → Prop) :
               rfl)
       (assume pandx : (∀x, p x) ∧ (∀x, q x)
         show (∀x, p x ∧ q x) by
+        apply pandx
           )
 
 /- 1.4 (**optional**). Supply a structured proof of the following property,

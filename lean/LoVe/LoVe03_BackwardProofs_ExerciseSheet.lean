@@ -231,17 +231,41 @@ and similarly for `Peirce`. -/
 
 theorem Peirce_of_EM :
   ExcludedMiddle → Peirce :=
-  sorry
-  -- by
-  --   intro e p
-  --   rw [Peirce]
-  --   rw [ExcludedMiddle]
+  by
+    rw [ExcludedMiddle]
+    intro ex a b p
+    apply Or.elim
+    {
+      apply ex
+    }
+    {
+      intro ha
+      exact ha
+    }
+    {
+      intro not_a
+      apply p
+      intro ha
+      apply False.elim
+      apply not_a
+      apply ha
+    }
 
 /- 3.2 (**optional**). Prove the following implication using tactics. -/
 
 theorem DN_of_Peirce :
   Peirce → DoubleNegation :=
-  sorry
+    by
+      rw [Peirce, DoubleNegation]
+      intro p a nna
+      apply p a False
+      intro haf
+      apply False.elim
+      apply nna
+      intro ha
+      exact haf ha
+
+
 
 /- We leave the remaining implication for the homework: -/
 
@@ -249,7 +273,17 @@ namespace SorryTheorems
 
 theorem EM_of_DN :
   DoubleNegation → ExcludedMiddle :=
-sorry
+    by
+      rw [DoubleNegation, ExcludedMiddle]
+      intro d b
+      apply d
+      intro ha
+      apply ha
+      apply Or.inr
+      intro hb
+      apply ha
+      apply Or.inl
+      exact hb
 
 end SorryTheorems
 

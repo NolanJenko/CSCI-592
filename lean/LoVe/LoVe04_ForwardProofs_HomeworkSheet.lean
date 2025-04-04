@@ -25,6 +25,7 @@ theorem about_Impl :
   ∀a b : Prop, ¬ a ∨ b → a → b :=
   by
     intros a b hor ha
+
     apply Or.elim hor
     { intro hna
       apply False.elim
@@ -40,8 +41,14 @@ Hint: There is an easy way. -/
 
 theorem about_Impl_term :
   ∀a b : Prop, ¬ a ∨ b → a → b :=
-  by
-    intro f
+fun a b h1 h2=>
+  Or.elim h1
+    (fun na => False.elim (na h2))
+    (fun b => b)
+
+
+
+
 
 
 /- 1.2 (2 points). Prove the same theorem again, this time by providing a
@@ -49,7 +56,26 @@ structured proof, with `fix`, `assume`, and `show`. -/
 
 theorem about_Impl_struct :
   ∀a b : Prop, ¬ a ∨ b → a → b :=
-  sorry
+  fix a b : Prop
+  assume h : ¬ a ∨ b
+
+  show a → b from
+    Or.elim h
+      (
+        assume na : ¬a
+        assume aa : a
+        have f :=
+          na aa
+        show b from
+         False.elim
+         f
+      )
+      (
+        assume hb : b
+        assume ha : a
+        show b from
+          hb
+      )
 
 
 /- ## Question 2 (6 points): Connectives and Quantifiers
@@ -60,7 +86,41 @@ rules for `∀`, `∨`, and `↔`. -/
 
 theorem Or_comm_under_All {α : Type} (p q : α → Prop) :
   (∀x, p x ∨ q x) ↔ (∀x, q x ∨ p x) :=
-  sorry
+    Iff.intro
+  (
+    -- Assume our hypothesis
+    assume h : ∀x, p x ∨ q x
+    assume x : α
+    have hx :=
+      h x
+    Or.elim hx
+    (
+      assume px : p x
+      show q x ∨ p x from
+        Or.inr px
+    )
+    (
+      assume qx : q x
+      show q x ∨ p x from
+        Or.inl qx
+    )
+  )
+  (
+    assume h : ∀x, q x ∨ p x
+    assume x : α
+    have hx : q x ∨ p x := h x
+    Or.elim hx
+      (
+        assume qx : q x
+        show p x ∨ q x from
+          Or.inr qx
+      )
+      (
+        assume px : p x
+        show p x ∨ q x from
+          Or.inl px
+      )
+  )
 
 /- 2.2 (3 points). We have proved or stated three of the six possible
 implications between `ExcludedMiddle`, `Peirce`, and `DoubleNegation` in the
@@ -75,15 +135,32 @@ namespace BackwardProofs
 
 theorem Peirce_of_DN :
   DoubleNegation → Peirce :=
-  sorry
+  assume dn : DoubleNegation
+  have em : ExcludedMiddle := SorryTheorems.EM_of_DN dn
+  have pierce : Peirce := Peirce_of_EM em
+  peirce
+
+-- Want to see if I can prove DoubleNegation implies Peirce without the help of some of the
+-- theorems
+theorem Peirce_of_DN_full :
+  DoubleNegation → Peirce :=
+    assume dn : DoubleNegation
+    fix a b : Prop
+    sorry
+
+
 
 theorem EM_of_Peirce :
   Peirce → ExcludedMiddle :=
-  sorry
+  assume p : Peirce
+  have pofd : DoubleNegation := DN_of_Peirce p
+  SorryTheorems.EM_of_DN pofd
+
 
 theorem dn_of_em :
   ExcludedMiddle → DoubleNegation :=
-  sorry
+  assume ex : ExcludedMiddle
+
 
 end BackwardProofs
 

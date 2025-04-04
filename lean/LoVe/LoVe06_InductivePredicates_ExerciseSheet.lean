@@ -145,6 +145,8 @@ theorem mirror_IsFull {α : Type} :
                 apply IsFull.node
                 { apply ih_l hr }
                 { simp [mirror_Eq_nil_Iff, *] }
+                { cases hiff with
+                  | mirror r => sorry}
               }
             }
 
@@ -159,7 +161,14 @@ def Tree.map {α β : Type} (f : α → β) : Tree α → Tree β
 
 theorem Tree.map_eq_empty_iff {α β : Type} (f : α → β) :
   ∀t : Tree α, Tree.map f t = Tree.nil ↔ t = Tree.nil :=
-  sorry
+  by
+    intro h
+    cases h with
+     | nil => simp [Tree.map]
+     | node a l r =>
+     -- Sometimes these work and I dont know exactly why. Kinda wanna rewrite these more expliclty
+        simp [Tree.map]
+
 
 /- 3.4 (**optional**). Prove the following theorem by rule induction. -/
 

@@ -52,7 +52,8 @@ instance Option.LawfulMonadWithOrelse :
     emp          := Option.none
     orelse       := Option.orelse
     emp_orelse   :=
-      sorry
+      by
+        simp [Option.orelse]
     orelse_emp   :=
       by
         intro α ma
@@ -61,7 +62,14 @@ instance Option.LawfulMonadWithOrelse :
         { rfl }
         { rfl }
     orelse_assoc :=
-      sorry
+      by
+        intro a b ma mma
+        simp [Option.orelse]
+        cases b with
+          | none =>
+            simp [Pure.pure]
+          | some =>
+            simp [Pure.pure]
     emp_bind     :=
       by
         intro α β f
