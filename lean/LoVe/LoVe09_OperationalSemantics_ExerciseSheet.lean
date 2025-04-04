@@ -163,7 +163,13 @@ theorem BigStep_loop {S s u} :
             }
             {
               apply BigStep.loop
+              {
+
+              }
             }
+          }
+          {
+            exact s
           }
         | loop_base =>
           apply Or.inl
