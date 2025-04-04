@@ -173,12 +173,12 @@ theorem BigStep_loop {S s u} :
         | inr =>
           apply Exists.elim h_1
           {
-            intro a hElim
-            apply And.left
-
-          }
-          {
-
+            intro t hElim
+            cases hElim with
+              | intro =>
+                apply BigStep.loop
+                apply left
+                exact right
           }
         | inl =>
           simp [h_1]
@@ -189,19 +189,35 @@ theorem BigStep_loop {S s u} :
 
 @[simp] theorem BigStep_choice {Ss s t} :
   (Stmt.choice Ss, s) ⟹ t ↔
-  (∃(i : ℕ) (hless : i < List.length Ss), (Ss[i]'hless, s) ⟹ t) := sorry
-    -- by
-    --   apply Iff.intro
-    --   {
-    --       apply Exists.elim
-    --         {
-    --           by
-    --           rw []
-    --         }
-    --         {
+  (∃(i : ℕ) (hless : i < List.length Ss), (Ss[i]'hless, s) ⟹ t) :=
+    by
+      apply Iff.intro
+      {
+        intro h
+        apply Exists.elim
+        {
+          apply Exists.elim
+          {
+            apply
+          }
+          {
+            sorry
+          }
+          {
+            sorry
+          }
 
-    --         }
-    --   }
+        }
+        {
+          sorry
+        }
+        {
+          sorry
+        }
+      }
+      {
+        sorry
+      }
 
 end GCL
 
@@ -215,6 +231,8 @@ def gcl_of : Stmt → GCL.Stmt
     GCL.Stmt.assign x a
   | S; T =>
     GCL.Stmt.seq (gcl_of S) (gcl_of T)
+  -- not maybe the best translate but an if statement becomes a nondeterminsitc execution of the inner statement
+  -- or the else statement
   | Stmt.ifThenElse B S T  =>
     GCL.Stmt.choice [gcl_of S, gcl_of T]
   | Stmt.whileDo B S =>
@@ -311,29 +329,23 @@ theorem BigStepEquiv.seq_skip_right {S} :
       show (S, s) ⟹ t from
         by
           cases h with
-            | seq =>
-              aesop
+            | seq d m f t=>
+              exact hS
      )
      (
+      -- Backwards proof
+      -- by
+      --   intro h
+      --   apply BigStep.seq
+      --   apply h
+      --   apply BigStep.skip
+      -- Forwards Proof
       assume h: (S, s) ⟹ t
-      show (S; Stmt.skip, s) ⟹ t from
-        by
-
-          -- apply BigStep.skip s
-          apply BigStep.seq _ _ _  s t
-          have st :=
-            BigStep.skip s
-          -- apply st
-          -- apply BigStep.skip t
-          {
-            apply False.elim
-            exact h
-            -- apply BigStep.skip s
-          }
-          {
-            apply BigStep.skip s
-            exact st
-          }
+      have hSkip : (Stmt.skip, t) ⟹ t :=
+        BigStep.skip t
+      have hSeq :=
+        BigStep.seq S Stmt.skip s t t
+      hSeq h hSkip
      )
 
 theorem BigStepEquiv.if_seq_while_skip {B S} :
