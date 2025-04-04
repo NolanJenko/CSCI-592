@@ -157,26 +157,32 @@ theorem BigStep_loop {S s u} :
           -- Can techically use aesop here to finish the proof but that feels a bit cheap
           apply Exists.intro
           {
-            apply And.intro
+            apply And.intro hOne
             {
-              sorry
+              exact hTwo
             }
-            {
-              apply BigStep.loop
-              {
-
-              }
-            }
-          }
-          {
-            exact s
           }
         | loop_base =>
           apply Or.inl
           rfl
    )
    (
-    sorry
+    by
+      intro h
+      cases h with
+        | inr =>
+          apply Exists.elim h_1
+          {
+            intro a hElim
+            apply And.left
+
+          }
+          {
+
+          }
+        | inl =>
+          simp [h_1]
+          simp [BigStep.loop_base S u]
    )
 
 /- This one is more difficult: -/
