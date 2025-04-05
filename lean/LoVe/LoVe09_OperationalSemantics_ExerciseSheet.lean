@@ -326,11 +326,12 @@ theorem BigStepEquiv.seq_skip_right {S} :
     Iff.intro
      (
       assume h : (S; Stmt.skip, s) ⟹ t
-      show (S, s) ⟹ t from
-        by
-          cases h with
-            | seq d m f t=>
-              exact hS
+      show (S, s) ⟹ t by
+        cases h with
+          | seq _ _ _ Tt Tt =>
+            cases hT with
+              | skip =>
+                exact hS
      )
      (
       -- Backwards proof
