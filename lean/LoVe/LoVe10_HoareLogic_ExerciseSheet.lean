@@ -34,7 +34,29 @@ record this in the invariant, by adding a conjunct `s "x" = x₀`. -/
 
 theorem COUNT_UP_correct (a₀ : ℕ) :
   {* fun s ↦ s "a" = a₀ *} (COUNT_UP) {* fun s ↦ s "a" = a₀ ∧ s "b" = a₀ *} :=
-  sorry
+  -- apply the while intro and adding conjunct `s "a" = a₀`
+  PartialHoare.while_intro' (fun s ↦ s "a" = a₀)
+  (by
+    apply PartialHoare.assign_intro'
+    simp [*]
+    intro s h _
+    exact h
+  )
+  (by
+    intro s ha
+    apply ha
+  )
+  (by
+    intro s hB hI
+    apply And.intro
+    {
+      exact hI
+    }
+    {
+      aesop
+    }
+  )
+
 
 /- 1.2. What happens if the program is run with `b > a`? How is this captured
 by the Hoare triple? -/
@@ -61,8 +83,32 @@ def sumUpTo : ℕ → ℕ
 emerging verification conditions. -/
 
 theorem GAUSS_correct (N : ℕ) :
-  {* fun s ↦ True *} (GAUSS N) {* fun s ↦ s "r" = sumUpTo N *} :=
-  sorry
+ {* fun s ↦ True *} (GAUSS N) {* fun s ↦ s "r" = sumUpTo N *} :=
+  show {* fun s ↦ True *}
+     (Stmt.assign "r" (fun s ↦ 0);
+      Stmt.assign "n" (fun s ↦ 0);
+      -- Insert the loop invariant here using Stmt.invWhileDo
+      ( Stmt.invWhileDo (fun s ↦ s "r" = sumUpTo (s "n")) -- Loop Invariant
+          (fun s ↦ s "n" ≠ N) -- Loop Condition
+          (Stmt.assign "n" (fun s ↦ s "n" + 1); -- Loop Body
+          Stmt.assign "r" (fun s ↦ s "r" + s "n"))))
+      {* fun s ↦ s "r" = sumUpTo N *} by
+        vcg <;>
+        intro s h
+        have leftH := h.left
+        {
+
+          sorry
+        }
+        {
+          intro mh
+          rw [mh]
+          aesop
+        }
+        {
+          sorry
+  }
+
 
 /- 1.4 (**optional**). The following program `MUL` is intended to compute the
 product of `n` and `m`, leaving the result in `r`. Invoke `vcg` on `MUL` using a
@@ -98,6 +144,7 @@ theorem consequence {P P' Q Q' S}
     (hS : [* P *] (S) [* Q *]) (hP : ∀s, P' s → P s) (hQ : ∀s, Q s → Q' s) :
   [* P' *] (S) [* Q' *] :=
   sorry
+
 
 /- 2.2. Prove the rule for `skip`. -/
 

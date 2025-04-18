@@ -69,8 +69,14 @@ theorem BigStep_sound (aenv : AExp × Envir) (i : ℤ) (hstep : aenv ⟹ i) :
     induction aenv with
       | mk =>
         simp [eval]
-        rw []
-        apply [fst snd i]
+        cases hstep with
+          | num =>
+            rw [eval]
+          | add =>
+            rw [eval]
+            simp [eval]
+          | mul =>
+            simp [eval]
 
 
 /- ## Question 2 (5 points + 1 bonus point): Semantics of Regular Expressions
@@ -147,10 +153,18 @@ inductive Matches {α : Type} : Regex α → List α → Prop
   Iff.intro
   (
     assume h : Matches (Regex.atom a) s
-    h
+    show s =[a] by
+      cases h with
+        | atom => rfl
   )
   (
-    sorry
+    by
+      intro h
+      cases h with
+        | refl =>
+          have matchesAtom := Matches.atom (a)
+          exact matchesAtom
+
   )
 
 @[simp] theorem Matches_nothing {α : Type} {s : List α} :

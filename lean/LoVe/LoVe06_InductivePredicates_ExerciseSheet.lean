@@ -132,23 +132,13 @@ theorems (e.g., `IsFull_mirror`, `mirror_mirror`). -/
 theorem mirror_IsFull {α : Type} :
   ∀t : Tree α, IsFull (mirror t) → IsFull t :=
     by
-      intro t
-      induction t with
-        | nil => {
-          intro ht
-          exact ht }
-        | node a l r ih_l ih_r => {
-          intro ht
-          cases ht with
-            | node _ _ _ hl hr hiff =>
-              {
-                apply IsFull.node
-                { apply ih_l hr }
-                { simp [mirror_Eq_nil_Iff, *] }
-                { cases hiff with
-                  | mirror r => sorry}
-              }
-            }
+      intro tree ht
+      induction tree with
+        | nil =>
+          apply ht
+        | node =>
+          rw [mirror]
+          simp [IsFull_mirror]
 
 
 /- 3.2. Define a `map` function on binary trees, similar to `List.map`. -/

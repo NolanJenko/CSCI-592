@@ -194,29 +194,22 @@ theorem BigStep_loop {S s u} :
       apply Iff.intro
       {
         intro h
-        apply Exists.elim
         {
-          apply Exists.elim
-          {
-            apply
-          }
-          {
-            sorry
-          }
-          {
-            sorry
-          }
-
-        }
-        {
-          sorry
-        }
-        {
-          sorry
+          cases h with
+            | choice =>
+              apply Exists.intro
+              apply Exists.intro
+              apply hbody
         }
       }
       {
-        sorry
+        intro h
+        cases h with
+          | intro =>
+            cases h_1 with
+              | intro =>
+                apply BigStep.choice Ss s t w
+                apply h
       }
 
 end GCL
@@ -311,7 +304,8 @@ theorem BigStepEquiv.seq_skip_left {S} :
           by
             cases h with
               | seq =>
-                aesop
+                cases hS with
+                  | skip => exact hT
       )
       (assume h : (S, s) ⟹ t
       by
@@ -351,7 +345,40 @@ theorem BigStepEquiv.seq_skip_right {S} :
 
 theorem BigStepEquiv.if_seq_while_skip {B S} :
   Stmt.ifThenElse B (S; Stmt.whileDo B S) Stmt.skip ~ Stmt.whileDo B S :=
-  sorry
+  by
+    rw [BigStepEquiv]
+    intro s t
+    apply Iff.intro
+    {
+      intro h
+      cases h with
+        | if_true =>
+          cases hbody with
+            | seq =>
+              apply BigStep.while_true _ _ s t_1
+              exact hcond
+              exact hS
+              exact hT
+        | if_false hB =>
+          cases hbody with
+            | skip =>
+              apply BigStep.while_false
+              exact hcond
+    }
+    {
+      intro h
+      cases h with
+        | while_true =>
+          apply BigStep.if_true
+          exact hcond
+          apply BigStep.seq _ _ s t_1
+          exact hbody
+          exact hrest
+        | while_false hcond hbody c d =>
+          apply BigStep.if_false
+          exact d
+          exact BigStep.skip s
+    }
 
 /- 2.2 (**optional**). Program equivalence can be used to replace subprograms
 by other subprograms with the same semantics. Prove the following so-called
@@ -366,11 +393,29 @@ theorem BigStepEquiv.seq_congr {S₁ S₂ T₁ T₂} (hS : S₁ ~ S₂)
       (
         by
           intro h
+          cases h with
+            | seq =>
+              have h1' := (hS s t_1).mp
 
+              have h2' := (hT t_1 t).mp
+
+              apply BigStep.seq _ _  s t_1
+              apply h1'
+              apply hS_1
+              apply h2'
+              exact hT_1
       )
-      {
-
-      }
+      (
+        by
+          intro h
+          cases h with
+            | seq =>
+              apply BigStep.seq _ _ s t_1
+              apply (hS s t_1).mpr
+              exact hS_1
+              apply (hT t_1 t).mpr
+              exact hT_1
+      )
 
 theorem BigStepEquiv.if_congr {B S₁ S₂ T₁ T₂} (hS : S₁ ~ S₂) (hT : T₁ ~ T₂) :
   Stmt.ifThenElse B S₁ T₁ ~ Stmt.ifThenElse B S₂ T₂ :=
