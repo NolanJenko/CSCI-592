@@ -136,9 +136,52 @@ theorem mirror_IsFull {α : Type} :
       induction tree with
         | nil =>
           apply ht
-        | node =>
-          rw [mirror]
-          simp [IsFull_mirror]
+        | node a l r ih_l ih_r =>
+          cases ht with
+            | node =>
+              apply IsFull.node
+              {
+                apply ih_l
+                exact hr
+              }
+              {
+                apply ih_r
+                exact hl
+              }
+              {
+                apply Iff.intro
+                {
+                  intro heq
+                  have rightHiff := hiff.mpr
+                  have kd : mirror l = Tree.nil :=
+                    by
+                      rw [heq]
+                      rfl
+                  have mirrorNil : mirror r = Tree.nil :=
+                    by
+                      apply rightHiff
+                      exact kd
+                  have treeNil := mirror_Eq_nil_Iff r
+                  apply treeNil.mp
+                  exact mirrorNil
+                }
+                {
+                  intro heq
+                  have leftHiff := hiff.mp
+                  have kd : mirror r = Tree.nil :=
+                    by
+                      rw [heq]
+                      rfl
+                  have mirrorNil : mirror l = Tree.nil :=
+                    by
+                      apply leftHiff
+                      exact kd
+                  have treeNil := mirror_Eq_nil_Iff l
+                  apply treeNil.mp
+                  exact mirrorNil
+                }
+              }
+
 
 
 /- 3.2. Define a `map` function on binary trees, similar to `List.map`. -/

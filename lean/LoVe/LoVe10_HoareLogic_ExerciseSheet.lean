@@ -79,6 +79,8 @@ def sumUpTo : ℕ → ℕ
   | 0     => 0
   | n + 1 => n + 1 + sumUpTo n
 
+#eval sumUpTo 6
+#eval sumUpTo 5
 /- Invoke `vcg` on `GAUSS` using a suitable loop invariant and prove the
 emerging verification conditions. -/
 
@@ -87,18 +89,17 @@ theorem GAUSS_correct (N : ℕ) :
   show {* fun s ↦ True *}
      (Stmt.assign "r" (fun s ↦ 0);
       Stmt.assign "n" (fun s ↦ 0);
-      -- Insert the loop invariant here using Stmt.invWhileDo
-      ( Stmt.invWhileDo (fun s ↦ s "r" = sumUpTo (s "n")) -- Loop Invariant
-          (fun s ↦ s "n" ≠ N) -- Loop Condition
-          (Stmt.assign "n" (fun s ↦ s "n" + 1); -- Loop Body
+      ( Stmt.invWhileDo (fun s ↦ s "r" = sumUpTo (s "n"))
+          (fun s ↦ s "n" ≠ N)
+          (Stmt.assign "n" (fun s ↦ s "n" + 1);
           Stmt.assign "r" (fun s ↦ s "r" + s "n"))))
       {* fun s ↦ s "r" = sumUpTo N *} by
         vcg <;>
         intro s h
-        have leftH := h.left
         {
-
-          sorry
+          simp [*]
+          rw [sumUpTo]
+          rw [add_comm]
         }
         {
           intro mh
@@ -106,7 +107,8 @@ theorem GAUSS_correct (N : ℕ) :
           aesop
         }
         {
-          sorry
+          simp [*]
+          rw [sumUpTo]
   }
 
 
@@ -122,7 +124,44 @@ def MUL : Stmt :=
 
 theorem MUL_correct (n₀ m₀ : ℕ) :
   {* fun s ↦ s "n" = n₀ ∧ s "m" = m₀ *} (MUL) {* fun s ↦ s "r" = n₀ * m₀ *} :=
-  sorry
+  show
+    {* fun s ↦ s "n" = n₀ ∧ s "m" = m₀ *}
+    (Stmt.assign "r" (fun s ↦ 0);
+    Stmt.invWhileDo (fun s ↦ s "r" = (n₀ - s "n"-1) * m₀ ∧ s "m" = m₀) (fun s ↦ s "n" ≠ 0)
+      (Stmt.assign "r" (fun s ↦ s "r" + s "m");
+      Stmt.assign "n" (fun s ↦ s "n" - 1)))
+    {* fun s ↦ s "r" = n₀ * m₀ *} by
+    vcg <;>
+    intro s h
+    have hLeft := h.left.right
+    (
+      simp [*]
+      -- rw [← hLeft]
+      -- rw [mul_zero]
+
+      rw [mul_comm]
+      -- ac_rfl
+      -- rw [sub_assoc]
+
+      rw [add_comm]
+      rw [mul_comm]
+      rw [← hLeft]
+      simp [*]
+      rw [← sub_sub_eq_add_sub]
+      -- rw [← mul_sub_left_distrib]
+      rw [sub_le_comm]
+      rw [mul_sub]
+      rw [add_sub_add_assoc]
+    )
+    (
+      intro h1
+      simp [*]
+      apply Or.inl
+      aesop
+    )
+    (
+      simp [*]
+    )
 
 
 /- ## Question 2: Hoare Triples for Total Correctness
