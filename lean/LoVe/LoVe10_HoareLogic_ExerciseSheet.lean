@@ -122,44 +122,79 @@ def MUL : Stmt :=
     (Stmt.assign "r" (fun s ↦ s "r" + s "m");
      Stmt.assign "n" (fun s ↦ s "n" - 1))
 
+
+-- Super pain to prove
 theorem MUL_correct (n₀ m₀ : ℕ) :
   {* fun s ↦ s "n" = n₀ ∧ s "m" = m₀ *} (MUL) {* fun s ↦ s "r" = n₀ * m₀ *} :=
   show
     {* fun s ↦ s "n" = n₀ ∧ s "m" = m₀ *}
     (Stmt.assign "r" (fun s ↦ 0);
-    Stmt.invWhileDo (fun s ↦ s "r" = (n₀ - s "n"-1) * m₀ ∧ s "m" = m₀) (fun s ↦ s "n" ≠ 0)
+    Stmt.invWhileDo (fun s ↦ s "r" + s "n" * m₀ = n₀ * m₀ ∧ s "m" = m₀) (fun s ↦ s "n" ≠ 0)
       (Stmt.assign "r" (fun s ↦ s "r" + s "m");
       Stmt.assign "n" (fun s ↦ s "n" - 1)))
     {* fun s ↦ s "r" = n₀ * m₀ *} by
     vcg <;>
     intro s h
-    have hLeft := h.left.right
+    have hLeft := h.left.left
+    have hRight := h.right
     (
+      -- Continue to rewrite our equation to match both sides
       simp [*]
-      -- rw [← hLeft]
-      -- rw [mul_zero]
-
       rw [mul_comm]
-      -- ac_rfl
-      -- rw [sub_assoc]
-
-      rw [add_comm]
+      rw [Nat.mul_sub_left_distrib]
+      simp [*]
+      rw [← Nat.add_sub_assoc]
+      rw [Nat.sub_add_comm]
+      simp [*]
       rw [mul_comm]
       rw [← hLeft]
-      simp [*]
-      rw [← sub_sub_eq_add_sub]
-      -- rw [← mul_sub_left_distrib]
-      rw [sub_le_comm]
-      rw [mul_sub]
-      rw [add_sub_add_assoc]
-    )
-    (
-      intro h1
-      simp [*]
-      apply Or.inl
       aesop
     )
     (
+      -- we can show that the s "n" has to be grater than zero since its a natural number and not
+      -- equal to zero from hRight
+      have nGreater : s "n" > 0 :=
+        by
+          apply Nat.pos_of_ne_zero
+          exact hRight
+      -- SHow that m₀ is less than or equal to m₀ * s "n" since n is greater than zero
+      have mEqual : m₀ * 1 ≤ m₀ * s "n" := Nat.mul_le_mul_left m₀ nGreater
+      have tt : m₀ =m₀ * Nat.succ 0 :=
+        by
+          simp [*]
+      -- Rewrite our equality to match mEqual
+      rw [tt]
+      rw [Nat.succ_eq_add_one]
+      rw [Nat.zero_add]
+      rw [mul_assoc]
+      rw [one_mul]
+      exact mEqual
+    )
+    (
+      simp [*]
+      intro h3 h4
+      -- can show s "n" = 0 from h : ¬s "n" ≠ 0
+      have hn : s "n" = 0 :=
+        by
+          contrapose! h
+          exact h
+      -- we need a way to rewrite s "r" and isolate it so show that
+      -- s "r" is equal to n₀ * m₀ - (s "m" * m₀)
+      have h5 : s "r" = n₀ * m₀ - (s "n" * m₀) :=
+        by
+          rw [← h3]
+          rw [hn]
+          rw [zero_mul]
+          simp
+
+      rw [h5]
+      rw [hn]
+      rw [← mul_comm]
+      rw [zero_mul]
+      rfl
+    )
+    (
+      -- Use simp I guess
       simp [*]
     )
 
