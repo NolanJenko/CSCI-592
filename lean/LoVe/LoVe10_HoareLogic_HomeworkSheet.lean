@@ -49,7 +49,7 @@ theorem FACT_correct (n₀ : ℕ) :
   show {* fun s ↦ s "n" = n₀ *}
    (Stmt.assign "i" (fun s ↦ 0);
     Stmt.assign "r" (fun s ↦ 1);
-    Stmt.invWhileDo (fun s ↦ s "n" = n₀ ∧ s "r" * s "i" = fact (s "i")) (fun s ↦ s "i" ≠ s "n")
+    Stmt.invWhileDo (fun s ↦ s "n" = n₀ ∧ s "r" = fact (s "i") ) (fun s ↦ s "i" ≠ s "n")
     (Stmt.assign "i" (fun s ↦ s "i" + 1);
      Stmt.assign "r" (fun s ↦ s "r" * s "i")))
   {* fun s ↦ s "r" = fact n₀ *}
@@ -61,15 +61,7 @@ theorem FACT_correct (n₀ : ℕ) :
     have iequal := h.right
     (
       simp [*]
-      rw [← factH]
-      rw [Nat.mul_add]
-      rw [Nat.mul_one]
-      rw [Nat.mul_add]
-      simp [*]
-      rw [Nat.add_mul]
       rw [mul_comm]
-      rw [factH]
-      sorry
     )
     (
       simp [*]
@@ -80,10 +72,11 @@ theorem FACT_correct (n₀ : ℕ) :
           aesop
       rw [← h2]
       rw [ni]
-      rw [← h3]
-
-
+      rw [h3]
     )
+    {
+      simp [*]
+    }
 
 
 /- ## Question 2 (5 points + 1 bonus point):
