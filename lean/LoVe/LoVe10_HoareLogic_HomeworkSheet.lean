@@ -78,12 +78,10 @@ theorem FACT_correct (n₀ : ℕ) :
         by
           contrapose h
           aesop
-      have mm : s "r" = fact (s "i") / s "i" :=
-        by
-          rw [← h3]
-          rw [Nat.mul_div_cancel]
-          rw [← ni]
-      rw []
+      rw [← h2]
+      rw [ni]
+      rw [← h3]
+
 
     )
 
