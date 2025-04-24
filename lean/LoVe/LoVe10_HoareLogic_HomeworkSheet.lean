@@ -1,7 +1,7 @@
 /- Copyright © 2018–2024 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
-import LoVe.LoVe09_OperationalSemantics_ExerciseSheet
+-- import LoVe.LoVe09_OperationalSemantics_ExerciseSheet
 import LoVe.LoVe10_HoareLogic_Demo
 
 
@@ -46,7 +46,46 @@ capture the fact that the variable `n` does not change. -/
 
 theorem FACT_correct (n₀ : ℕ) :
   {* fun s ↦ s "n" = n₀ *} (FACT) {* fun s ↦ s "r" = fact n₀ *} :=
-  sorry
+  show {* fun s ↦ s "n" = n₀ *}
+   (Stmt.assign "i" (fun s ↦ 0);
+    Stmt.assign "r" (fun s ↦ 1);
+    Stmt.invWhileDo (fun s ↦ s "n" = n₀ ∧ s "r" * s "i" = fact (s "i")) (fun s ↦ s "i" ≠ s "n")
+    (Stmt.assign "i" (fun s ↦ s "i" + 1);
+     Stmt.assign "r" (fun s ↦ s "r" * s "i")))
+  {* fun s ↦ s "r" = fact n₀ *}
+  by
+    vcg <;>
+    intro s h
+    have nH := h.left.left
+    have factH := h.left.right
+    have iequal := h.right
+    (
+      simp [*]
+      rw [← factH]
+      rw [Nat.mul_add]
+      rw [Nat.mul_one]
+      rw [Nat.mul_add]
+      simp [*]
+      rw [Nat.add_mul]
+      rw [mul_comm]
+      rw [factH]
+      sorry
+    )
+    (
+      simp [*]
+      intro h2 h3
+      have ni : s "n" = s "i" :=
+        by
+          contrapose h
+          aesop
+      have mm : s "r" = fact (s "i") / s "i" :=
+        by
+          rw [← h3]
+          rw [Nat.mul_div_cancel]
+          rw [← ni]
+      rw []
+
+    )
 
 
 /- ## Question 2 (5 points + 1 bonus point):

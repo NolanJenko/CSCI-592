@@ -196,6 +196,7 @@ guarantee that the output is unambiguous. -/
 
 def Term.repr : Term → String
 -- enter your answer here
+sorry
 
 instance Term.Repr : Repr Term :=
   { reprPrec := fun t prec ↦ Term.repr t }
