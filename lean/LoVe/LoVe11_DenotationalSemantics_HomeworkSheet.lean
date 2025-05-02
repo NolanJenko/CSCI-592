@@ -68,16 +68,37 @@ Hints:
 
 theorem pure_bind {α β : Type} (a : α) (f : α → Nondet β) :
   pure a >>= f = f a :=
- sorry
+  by
+    simp [Bind.bind, Pure.pure]
+    rw [bind]
 
 theorem bind_pure {α : Type} :
   ∀na : Nondet α, na >>= pure = na :=
-  sorry
+  by
+    simp [Bind.bind, Pure.pure]
+    intro h
+    induction h with
+      | just => aesop
+      | fail => aesop
+      | choice =>
+        rw [bind]
+        simp [*]
+
 
 theorem bind_assoc {α β γ : Type} :
   ∀(na : Nondet α) (f : α → Nondet β) (g : β → Nondet γ),
     ((na >>= f) >>= g) = (na >>= (fun a ↦ f a >>= g)) :=
-  sorry
+    by
+      simp [Bind.bind, Pure.pure]
+      intro non ha hb
+      induction non with
+        | just => aesop
+        | fail => aesop
+        | choice =>
+          rw [bind]
+          rw [bind]
+          rw [bind]
+          simp [*]
 
 /- The function `portmanteau` computes a portmanteau of two lists: A
 portmanteau of `xs` and `ys` has `xs` as a prefix and `ys` as a suffix, and they
